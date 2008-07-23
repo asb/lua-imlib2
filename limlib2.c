@@ -44,16 +44,13 @@ static int push_load_error_str(lua_State *L, Imlib_Load_Error err, const char *f
   return 1;
 }
 
-/*?lua
-module "imlib2.color"
-description [[
-  Represent colors in rgba format. Each instance of imlib2.color has the
-  modifiable fields red, green, blue and alpha. An error will be rainsed on an
-  attempt to set them to a value outside of the range 0 &lt;= x &lt;= 255.  
-  Non-integer
-  values will be truncated.
-  ]]
-?*/
+/**
+ * @@module imlib2.color : Represent colors in rgba format.
+ * Each instance of imlib2.color has the modifiable fields red, green, blue 
+ * and alpha. An error will be raised on an attempt to set them to a value 
+ * outside of the range 0 &lt;= x &lt;= 255.  Non-integer values will be 
+ * truncated.
+ */
 
 static Imlib_Color *push_Color(lua_State *L) {
   Imlib_Color *c = (Imlib_Color*)lua_newuserdata(L, sizeof(Imlib_Color));
@@ -65,13 +62,13 @@ static Imlib_Color *push_Color(lua_State *L) {
 #define check_color(L,n)\
   (Imlib_Color*)luaL_checkudata(L, n, "imlib2.color")
 
-/*?lua
-signature "color.new(red, green, blue, alpha)"
-description [[
-  Creates a new color. alpha is optional. An error will be raised unless red, 
-  green, blue and alpha are in the range 0 &lt;= x &lt;= 255
-  ]]
-?*/
+/**
+ * color.new(red, green, blue[, alpha]) : Creates a new color.
+ * An error will be raised unless red, green, blue and alpha are in the range 
+ * 0 &lt; x &lt;= 255
+ *
+ * @constructor
+ */
 static int color_new(lua_State *L) {
   Imlib_Color *c;
   int i;
@@ -96,13 +93,6 @@ static int color_new(lua_State *L) {
 
 /*** imlib2.color metamethods ***/
 
-/*?lua
-signature "col:__tostring()"
-description [[
-  Return a string representation such as &lt;imlib2.color r=0 g=0 b=0 a=0&gt; 
-  (0x%p) where %p is the memory location
-  ]]
-?*/
 static int colorm_tostring(lua_State *L) {
   Imlib_Color *c = check_color(L,1);
   lua_pushfstring(L, "<imlib2.color r=%d g=%d b=%d a=%d> (%p)",
@@ -110,13 +100,26 @@ static int colorm_tostring(lua_State *L) {
   return 1;
 }
 
-/*?lua
-for _,v in ipairs{"red", "green", "blue", "alpha"} do
-  signature("col."..v)
-  description(([[Get/set the %s field. Raises an exception if you try to set 
-  the value outside of the range 0 &lt;= value &lt;= 255]]):format(v))
-end
-?*/
+/**
+ * @field col.red : get/set the red field
+ * Raises an exception if you try to set the value outside of the range 0-255 
+ * inclusive.
+ */
+/**
+ * @field col.green : get/set the red field
+ * Raises an exception if you try to set the value outside of the range 0-255 
+ * inclusive.
+ */
+/**
+ * @field col.blue : get/set the red field
+ * Raises an exception if you try to set the value outside of the range 0-255 
+ * inclusive.
+ */
+/**
+ * @field col.alpha : get/set the red field
+ * Raises an exception if you try to set the value outside of the range 0-255 
+ * inclusive.
+ */
 static int colorm__index(lua_State *L) {
   Imlib_Color *c = check_color(L, 1);
   const char *field = luaL_checkstring(L, 2);
@@ -155,14 +158,13 @@ static int colorm__newindex(lua_State *L) {
   return 0;
 }
 
-/*?lua
-module "imlib2.border"
-description [[
-  Represents a border. Contains left, top, right, bottom values as writeable 
-  fields. the area at the edge of the image that does not scale with the rest 
-  of the image when resized - the borders remain constant in size.
-  ]]
-?*/
+/**
+ * @@module imlib2.border : Represents a border.
+ * Contains left, top, right, bottom values as mutable fields. A border is the 
+ * area at the edge of an image that does not scale when the rest of the image 
+ * is resized - the borders remain constant in size.
+ */
+
 static Imlib_Border *push_Border(lua_State *L) {
   Imlib_Border *b = (Imlib_Border*)lua_newuserdata(L, sizeof(Imlib_Border));
   luaL_getmetatable(L, "imlib2.border");
@@ -170,10 +172,9 @@ static Imlib_Border *push_Border(lua_State *L) {
   return b;
 }
 
-/*?lua
-signature "border.new(left, top, right, bottom)"
-description "Creates a new border. All parameters are mandatory."
-?*/
+/**
+ * border.new(left, top, right, bottom) : creates a new border
+ */
 static int border_new(lua_State *L) {
   Imlib_Border *b;
   int left=luaL_checkint(L, 1);
@@ -192,11 +193,6 @@ static int border_new(lua_State *L) {
 #define check_border(L, n)\
   (Imlib_Border*)luaL_checkudata(L, n, "imlib2.border")
 
-/*?lua
-signature "bd:__tostring()"
-description [[Return a string representation such as &lt;imlib2.border left=1 
-top=1 right=1 bottom=1&gt; (0x%p) where %p is the memory location]]
-?*/
 static int borderm_tostring(lua_State *L) {
   Imlib_Border *b = check_border(L, 1);
   lua_pushfstring(L, "<imlib2.border left=%d top=%d right=%d bottom=%d> (%p)",
@@ -204,12 +200,18 @@ static int borderm_tostring(lua_State *L) {
   return 1;
 }
 
-/*?lua
-for _,v in ipairs{"left", "top", "right", "bottom"} do
-  signature("bd."..v)
-  description(("Get/set the %s field"):format(v))
-end
-?*/
+/**
+ * @field bd.left : allows get/set
+ */
+/**
+ * @field bd.top : allows get/set
+ */
+/**
+ * @field bd.right : allows get/set
+ */
+/**
+ * @field bd.bottom : allows get/set
+ */
 static int borderm__index(lua_State *L) {
   Imlib_Border *b = check_border(L, 1);
   const char *field = luaL_checkstring(L, 2);
@@ -247,13 +249,10 @@ static int borderm__newindex(lua_State *L) {
   return 0;
 }
 
-/*?lua
-module "imlib2.gradient"
-description [[
-  Represents a gradient to which you can add colors. Each color is stored with 
-  an offset.
-  ]]
-?*/
+/**
+ * @@module imlib2.gradient
+ * Consists of colours and the offsets at which they occur.
+ */
 static Gradient push_Gradient(lua_State *L, Gradient gr) {
   Gradient *grp = (Gradient*)lua_newuserdata(L, sizeof(Gradient));
   *grp = gr;
@@ -271,12 +270,12 @@ static Gradient check_Gradient(lua_State *L, int n) {
   return gr;
 }
 
-/*?lua
-signature "gradient.new()"
-description [[
-  Creates a new gradient. Use grad:add_color() to add colors to it
-  ]]
-?*/
+/**
+ * gradient.new() : Creates a new gradient
+ * Use grad:add_color() to add colors to it
+ *
+ * @constructor
+ */
 static int gradient_new(lua_State *L) {
   Gradient gr = push_Gradient(L, imlib_create_color_range());
   if (gr == NULL)
@@ -295,13 +294,6 @@ static int gradientm_gc(lua_State *L) {
   return 0;
 }
 
-/*?lua
-signature "grad:__tostring()"
-description [[
-  Returns a string representation of the gradient in the form 
-  &lt;imlib2.gradient&gt; (%p) where %p is the memory location
-  ]]
-?*/
 static int gradientm_tostring(lua_State *L) {
   Gradient *grp = (Gradient*)luaL_checkudata(L, 1, "imlib2.gradient");
   Gradient gr = *grp;
@@ -312,15 +304,13 @@ static int gradientm_tostring(lua_State *L) {
   return 1;
 }
 
-/*?lua
-signature("grad:add_color(offset, color)")
-description [[
-  Add an imlib2.color object at the given offset. The offset parameter has no 
-  meaning for the first color added
-  ]]
-param("offset", "the distance from the previous color")
-param("color", "an imlib2.color")
-?*/
+/**
+ * grad:add_color(offset, color) : add an imlib2.color at the given offset
+ * The offset parameter has no meaning for the first color added.
+ *
+ * @parameter offset the distance from the previous colour in pixels
+ * @parameter color an imlib2.color
+ */
 static int gradientm_add_color(lua_State *L) {
   Gradient gr = check_Gradient(L, 1);
   int offset = luaL_checkint(L, 2);
@@ -331,13 +321,11 @@ static int gradientm_add_color(lua_State *L) {
   return 0;
 }
 
-/*?lua
-module "imlib2.polygon"
-description [[
-  Represents a polygon object. Points are drawn in order, from the first to 
-  last.
-  ]]
-?*/
+/**
+ * @@module imlib2.polygon : represents a polygon object
+ * Points are drawn in the order in which they are added
+ */
+
 static Polygon push_Polygon(lua_State *L, Polygon po) {
   Polygon *pop = (Polygon*)lua_newuserdata(L, sizeof(Polygon));
   *pop = po;
@@ -355,10 +343,10 @@ static Polygon check_Polygon(lua_State *L, int n) {
   return po;
 }
 
-/*?lua
-signature "polygon.new()"
-description "Create a new polygon"
-?*/
+/** polygon.new() : create a new polygon
+ *
+ * @constructor
+ */
 static int polygon_new(lua_State *L) {
   Polygon po = push_Polygon(L, imlib_polygon_new());
   if (po == NULL)
@@ -376,13 +364,6 @@ static int polygonm_gc(lua_State *L) {
   return 0;
 }
 
-/*?lua
-signature "poly:__tostring()"
-description [[
-  Returns a string representation of the polygon of the form 
-  &lt;imlib2.polygon&gt; (%p) where %p is the memory location
-  ]]
-?*/
 static int polygonm_tostring(lua_State *L) {
   Polygon po = check_Polygon(L, 1);
   if (po)
@@ -392,12 +373,12 @@ static int polygonm_tostring(lua_State *L) {
   return 1;
 }
 
-/*?lua
-signature "poly:add_point(x,y)"
-description "Adds point (x,y) to the polygon."
-param("x", "x coordinate in pixels")
-param("y", "y coordinate in pixels")
-?*/
+/**
+ * poly:add_point(x, y) : add point (x,y) to the polygon
+ *
+ * @param x x coordinate in pixels
+ * @param y y coordinate in pixels
+ */
 static int polygonm_add_point(lua_State *L) {
   Polygon po = check_Polygon(L, 1);
   int x = luaL_checkint(L, 2);
@@ -406,16 +387,14 @@ static int polygonm_add_point(lua_State *L) {
   return 0;
 }
 
-/*?lua
-signature "poly:get_bounds()"
-description [[
-  Returns the four points of the rectangular bounding area for the polygon
-  ]]
-returns("x1", "x coordinate of the upper left corner")
-returns("y1", "y coordinate of the upper left corner")
-returns("x2", "x coordinate of the lower right corner")
-returns("y2", "y coordinate of the lower right corner")
-?*/
+/**
+ * poly:get_bounds()
+ * Returns the four points of the rectangular bounding area for the polygon.
+ * @return `x1`: x coordinate of the upper left corner
+ * @return `y1`: y coordinate of the upper left corner
+ * @return `x2`: x coordinate of the upper right corner
+ * @return `y2`: y coordinate of the lower right corner
+ */
 static int polygonm_get_bounds(lua_State *L) {
   int i;
   Polygon po = check_Polygon(L, 1);
@@ -426,10 +405,9 @@ static int polygonm_get_bounds(lua_State *L) {
   return 4;
 }
 
-/*?lua
-signature "poly:contains_point()"
-description "Returns true if the polygon contains (x,y)."
-?*/
+/**
+ * poly:contains_point() : returns true if the polygon contains point (x,y)
+ */
 static int polygonm_contains_point(lua_State *L) {
   Polygon po = check_Polygon(L, 1);
   int x = luaL_checkint(L, 2);
@@ -438,13 +416,11 @@ static int polygonm_contains_point(lua_State *L) {
   return 1;
 }
 
-/*?lua
-module "imlib2.font"
-description [[
-  Represents a loaded font and provides methods for querying and modifying the 
-  font paths.
-  ]]
-?*/
+/**
+ * @@module imlib2.font
+ * Instances represent a loaded font. Provides static methods for querying and 
+ * modifying the font paths.
+ */
 
 static Font push_Font(lua_State *L, Font fo) {
   Font *fop = (Font*)lua_newuserdata(L, sizeof(Font));
@@ -462,13 +438,13 @@ static Font check_Font(lua_State *L, int n) {
   return fo;
 }
 
-/*?lua
-signature "font.load(name)"
-description [[
-  Load a font from the front path. Returns a font object for the given font 
-  name, e.g. "Vera/10". If it can not be found, returns nil, err_msg.
-  ]]
-?*/
+/**
+ * font.load(name) : load the given font from the current font path.
+ * 
+ * @param name a font name, e.g. "Vera/10"
+ * @return a font object for the given font name, or if no such font can be 
+ *         found on the font path, nil plus an error message.
+ */
 static int font_load(lua_State *L) {
   const char *path = luaL_checkstring(L, 1);
   Font fo = push_Font(L, imlib_load_font(path));
@@ -480,12 +456,11 @@ static int font_load(lua_State *L) {
   return 1;
 }
 
-/*?lua
-signature "font.add_path(path)"
-description [[
-  Add the given path to the list of paths Imlib2 searches for font loading.
-  ]]
-?*/
+/**
+ * font.add_path(path)
+ * Add the given path to the list of paths Imlib2 searches when loading a 
+ * font.
+ */
 static int font_add_path(lua_State *L) {
   const char *path = luaL_checkstring(L, 1);
   /* This is safe. Imlib2 does a strdup */
@@ -493,10 +468,10 @@ static int font_add_path(lua_State *L) {
   return 0;
 }
 
-/*?lua
-signature "font.remove_path(path)"
-description "Remove the given path from Imlib2's font list."
-?*/
+/**
+ * font.remove_path(path)
+ * Remove the given path from Imlib2's font path list
+ */
 static int font_remove_path(lua_State *L) {
   const char *path = luaL_checkstring(L, 1);
 
@@ -504,10 +479,12 @@ static int font_remove_path(lua_State *L) {
   return 0;
 }
 
-/*?lua
-signature "font.list_paths()"
-description "Return a table containing all the font paths Imlib2 will search."
-?*/
+/**
+ * font.list_paths()
+ *
+ * @return a table containing all the font paths Imlib2 will search when asked 
+ *         to load a font
+ */
 static int font_list_paths(lua_State *L) {
   char **paths;
   int i, n;
@@ -522,12 +499,11 @@ static int font_list_paths(lua_State *L) {
   return 1;
 }
 
-/*?lua
-signature "font.list_fonts()"
-description [[
-  Returns an array of all the font names Imlib2 can find in its font path.
-  ]]
-?*/
+/**
+ * font.list_fonts() : list all font names on the font path
+ *
+ * @return an array of all the font names Imlib2 can find on its font path
+ */
 static int font_list_fonts(lua_State *L) {
   char **fonts;
   int i, n;
@@ -542,24 +518,23 @@ static int font_list_fonts(lua_State *L) {
   return 1;
 }
 
-/*?lua
-signature "font.get_cache_size()"
-description "Returns the font cache size in bytes"
-?*/
+/**
+ * font.get_cache_size() : get the size of the font cache
+ *
+ * @return the font cache size in bytes
+ */
 static int font_get_cache_size(lua_State *L) {
   lua_pushinteger(L, imlib_get_font_cache_size());
   return 1;
 }
 
-/*?lua
-signature "font.set_cache_size()"
-description [[
-  Sets the font cache size in bytes. Whenever you set the font cache size,  
-  Imlib2 will flush fonts from the -- cache until the memory used by fonts is 
-  less than or equal to the font -- cache size. Setting the size to 0 frees 
-  all speculatively cached fonts.
-  ]]
-?*/
+/**
+ * font.set_cache_size()
+ * Sets the font cache size in bytes. Whenever you set the font cache size, 
+ * Imlib2 will flush fonts from the cache until the memory used by fonts is 
+ * less than or equal to the font cache size. Setting the size to 0 frees all 
+ * speculatively cached fonts.
+ */
 static int font_set_cache_size(lua_State *L) {
   int size = luaL_checkint(L, 1);
 
@@ -569,17 +544,16 @@ static int font_set_cache_size(lua_State *L) {
 
 static const char *const font_directions[] = {"right", "left", "down", "up", "angle", NULL};
 
-/*?lua
-signature "font.set_direction(dir, angle)"
-description [[
-  Sets the direction that text will be drawn at. Accepts 90 degree 
-  orientations, or an arbitrary angle. Raises an error for invalid direction 
-  names.
-  ]]
-param("dir", [[direction can be 'right', 'left', 'down', 'up' or 'angle'. Must
-supply the second argument if 'angle' is used]])
-param("angle", "Angle in radians. Only needed if direction was 'angle'")
-?*/
+/**
+ * font.set_direction(dir[, angle])
+ * Sets the direction that text will be drawn at. Accepts 90 degree 
+ * orientations, or an arbitrary angle. Raises an error for invalid direciton 
+ * names.
+ *
+ * @param dir can be 'right', 'left', 'down', 'up' or 'angle' (in which case 
+ *            `angle` must be given)
+ * @param angle given in radians. Only needed if `direction` was 'angle'
+ */
 static int font_set_direction(lua_State *L) {
   int dir = luaL_checkoption(L, 1, NULL, font_directions);
   if (dir == IMLIB_TEXT_TO_ANGLE) {
@@ -593,14 +567,14 @@ static int font_set_direction(lua_State *L) {
   return 0;
 }
 
-/*?lua
-signature "font.get_direction()"
-description [[
-  Returns the direction that text is set to be drawn at. Returns a string if 
-  the direction is "right", "left", "down" or "up".  Returns "angle" and the 
-  angle in radians if text is set to be drawn at an arbitrary angle.
-  ]]
-?*/
+/**
+ * font.get_direction()
+ * Gives the direction that text is set to be drawn at.
+ *
+ * @return one of the strings 'right', 'left', 'down', 'up', or 'angle'. If 
+ *         'angle' is returned, then the angle in radians is given as a second 
+ *         return value.
+ */
 static int font_get_direction(lua_State *L) {
   int dir = imlib_context_get_direction();
   if (dir == IMLIB_TEXT_TO_ANGLE) {
@@ -625,13 +599,6 @@ static int fontm_gc(lua_State *L) {
   return 0;
 }
 
-/*?lua
-signature "fnt:__tostring()"
-description [[
-  Returns a string representation of the font in the format 
-  &lt;imlib2.font&gt; (%p) where %p is the memory location
-  ]]
-?*/
 static int fontm_tostring(lua_State *L) {
   Font *fop = (Font*)luaL_checkudata(L, 1, "imlib2.font");
   Font fo = *fop;
@@ -642,13 +609,12 @@ static int fontm_tostring(lua_State *L) {
   return 1;
 }
 
-/*?lua
-signature "fnt:get_size(str)"
-description [[
-  Get the width and height of the given string when drawn. The width and 
-  height are returned in pixels.
-  ]]
-?*/
+/**
+ * fnt:get_size(str)
+ * Get the width and height of the given string when drawn with `fnt`
+ *
+ * @return the width and height in pixels
+ */
 static int fontm_get_size(lua_State *L) {
   Font fo = check_Font(L, 1);
   const char *text = luaL_checkstring(L, 2);
@@ -661,14 +627,16 @@ static int fontm_get_size(lua_State *L) {
   return 2;
 }
 
-/*?lua
-signature "fnt:get_advance(str)"
-description [[
-  Get the horizontal and vertical advance of the given string. The horizontal 
-  and vertical advance are the number of pixels the next text string would 
-  need to be placed at.
-  ]]
-?*/
+/**
+ * fnt:get_advance(str)
+ * Get the horizontal and vertical advance of the given string when drawn with 
+ * `fnt`. The horizontal and vertical advance are the number of pixels away 
+ * the next string would need to be placed at. The advances are not adjusted 
+ * for rotation, and are calculated as if the text was drawn horizontally from 
+ * left to right.
+ *
+ * @return the horizontal and vertical advance in pixels
+ */
 static int fontm_get_advance(lua_State *L) {
   Font fo = check_Font(L, 1);
   const char *text = luaL_checkstring(L, 2);
@@ -681,12 +649,10 @@ static int fontm_get_advance(lua_State *L) {
   return 2;
 }
 
-/*?lua
-signature "fnt:get_inset(str)"
-description [[
-  Returns the inset in pixels of the first character of the given string.
-  ]]
-?*/
+/**
+ * fnt:get_inset(str)
+ * The inset in pixels of the first character of the given string.
+ */
 static int fontm_get_inset(lua_State *L) {
   Font fo = check_Font(L, 1);
   
@@ -702,10 +668,10 @@ static int fontm_get_inset(lua_State *L) {
  * buggy
  */
 
-/*?lua
-signature "fnt:get_ascent()"
-description "Get the font's ascent in pixels."
-?*/
+/**
+ * fnt:get_ascent()
+ * Get the front's ascent in pixels.
+ */
 static int fontm_get_ascent(lua_State *L) {
   Font fo = check_Font(L, 1);
 
@@ -714,10 +680,10 @@ static int fontm_get_ascent(lua_State *L) {
   return 1;
 }
 
-/*?lua
-signature "fnt:get_maximum_ascent()"
-description "Get the font's maximum ascent"
-?*/
+/**
+ * fnt:get_maximum_ascent()
+ * Get the font's maximum ascent in pixels.
+ */
 static int fontm_get_maximum_ascent(lua_State *L) {
   Font fo = check_Font(L, 1);
 
@@ -726,10 +692,10 @@ static int fontm_get_maximum_ascent(lua_State *L) {
   return 1;
 }
 
-/*?lua
-signature "fnt:get_descent()"
-description "Get the font's descent in pixels."
-?*/
+/**
+ * fnt:get_descent()
+ * Get the font's descent in pixels.
+ */
 static int fontm_get_descent(lua_State *L) {
   Font fo = check_Font(L, 1);
 
@@ -738,10 +704,10 @@ static int fontm_get_descent(lua_State *L) {
   return 1;
 }
 
-/*?lua
-signature "fnt:get_maximum_descent()"
-description "Get the font's maximum descent"
-?*/
+/**
+ * fnt:get_maximum_descent()
+ * Get the font's maximum descent in pixels.
+ */
 static int fontm_get_maximum_descent(lua_State *L) {
   Font fo = check_Font(L, 1);
 
@@ -751,12 +717,10 @@ static int fontm_get_maximum_descent(lua_State *L) {
 }
 
 
-/*?lua
-module "imlib2.image"
-description [[
-  Methods for image loading, saving and manipulation
-  ]]
-?*/
+/**
+ * @@module imlib2.image
+ * Methods for image loading, saving and manipulation.
+ */
 
 static Image push_Image(lua_State *L, Image im) {
   Image *imp = (Image*)lua_newuserdata(L, sizeof(Image));
@@ -775,12 +739,14 @@ static Image check_Image(lua_State *L, int n) {
   return im;
 }
 
-/*?lua
-signature "image.new(width, height)"
-description "Create a new image of given width and height."
-param("width", "width in pixels")
-param("height", "height in pixels")
-?*/
+/**
+ * image.new(width, height)
+ * Create a new image of given width and height.
+ * 
+ * @constructor
+ * @param width given in pixels
+ * @param height given in pixels
+ */
 static int image_new(lua_State *L) {
   int w = luaL_checkint(L, 1);
   int h = luaL_checkint(L, 2);
@@ -792,23 +758,21 @@ static int image_new(lua_State *L) {
   return 1;
 }
 
-/*?lua
-signature "image.load(path)"
-description [[
-  Loads the image at the given path. Imlib2 searches its loader modules until 
-  it finds one that can decode the file at the given path. The loader modules 
-  available to you (and hence the range of filetypes you are able to load) 
-  will depend on the options used when building the Imlib2 shared library.  
-  Loaders will not decode image data until it is needed (provided this is 
-  feasible for the given file format). This means it is perfectly sensible to 
-  load many files in order to query their header information such as width and 
-  height. If the image is present in Imlib2's cache, it won't check if the 
-  file has changed and will instead just return that version of the image.
-  <br/>
-  If the path can not be loaded, this method will return nil followed by a 
-  message describing the error
-  ]]
-?*/
+/** image.load(path)
+ *
+ * Loads the image at the given path. Imlib2 searches its loader modules until 
+ * it finds one that can decode the file at the given path. The loader modules 
+ * available to you (and hence the range of filetypes you are able to load) 
+ * will depend on the options used when building the Imlib2 shared library. 
+ * Loaders will not decode image data until it is needed (provided this is 
+ * feasible for the given file format). This means it is perfectly sensible to 
+ * load many files in order to query their header information such as width 
+ * and height. If the image is present in Imlib2's cache, it won't check if 
+ * the file has change and will instead just return that cached version of the 
+ * image.
+ *
+ * @return the loaded image or else nil plus an error message
+ */
 static int image_load(lua_State *L) {
   const char *path = luaL_checkstring(L, 1);
   Imlib_Load_Error err;
@@ -824,13 +788,6 @@ static int image_load(lua_State *L) {
   }
 }
 
-/*?lua
-signature "img:__tostring()"
-description [[
-  Returns a string representation of the image of the form &lt;imlib2.image 
-  width=100 height=100&gt; (%p) where %p is the memory location.
-  ]]
-?*/
 static int imagem_tostring(lua_State *L) {
   Image *imp = (Image*)luaL_checkudata(L, 1, "imlib2.image");
   Image im = *imp;
@@ -844,12 +801,10 @@ static int imagem_tostring(lua_State *L) {
   return 1;
 }
 
-/*?lua
-signature "img:free()"
-description [[
-  Frees the image. This does not evice the image from Imlib2's cache
-  ]]
-?*/
+/**
+ * img:free()
+ * Frees the image. This does not evict the image from Imlib2's cache.
+ */
 static int imagem_free(lua_State *L) {
   Image *imp = (Image*)luaL_checkudata(L, 1, "imlib2.image");
   Image im = *imp;
@@ -861,10 +816,10 @@ static int imagem_free(lua_State *L) {
   return 0;
 }
 
-/*?lua
-signature "img:clone()"
-description "Returns a clone of the image."
-?*/
+/**
+ * img:clone()
+ * Obtain a clone of the image.
+ */
 static int imagem_clone(lua_State *L) {
   Image old_im = check_Image(L, 1);
   Image new_im;
@@ -876,10 +831,10 @@ static int imagem_clone(lua_State *L) {
   return 1;
 }
 
-/*?lua
-signature "img:get_width()"
-description "Returns the width of the image in pixels."
-?*/
+/**
+ * img:get_width()
+ * Get the width of the image in pixels.
+ */
 static int imagem_get_width(lua_State *L) {
   Image im = check_Image(L, 1);
   imlib_context_set_image(im);
@@ -887,10 +842,9 @@ static int imagem_get_width(lua_State *L) {
   return 1;
 }
 
-/*?lua
-signature "img:get_height"
-description "Returns the height of the image in pixels."
-?*/
+/** img:get_height()
+ * Get the height of the image in pixels.
+ */
 static int imagem_get_height(lua_State *L) {
   Image im = check_Image(L, 1);
   imlib_context_set_image(im);
@@ -898,10 +852,10 @@ static int imagem_get_height(lua_State *L) {
   return 1;
 }
 
-/*?lua
-signature "img:get_filename()"
-description "Returns the current image filename."
-?*/
+/**
+ * img:get_filename()
+ * Returns the current image filename.
+ */
 static int imagem_get_filename(lua_State *L) {
   Image im = check_Image(L, 1);
   imlib_context_set_image(im);
@@ -909,10 +863,10 @@ static int imagem_get_filename(lua_State *L) {
   return 1;
 }
 
-/*?lua
-signature "img:get_format()"
-description "Returns the current image format."
-?*/
+/**
+ * img:get_format()
+ * Get the current image format.
+ */
 static int imagem_get_format(lua_State *L) {
   Image im = check_Image(L, 1);
   imlib_context_set_image(im);
@@ -920,14 +874,12 @@ static int imagem_get_format(lua_State *L) {
   return 1;
 }
 
-/*?lua
-signature "img:set_format(format)"
-description [[
-  Sets the image format to the given string. No check is made to ensure that 
-  your Imlib2 can save in this format. If it can not, image:save() will fail.
-  ]]
-param("format", "e.g. 'png' or 'bmp'")
-?*/
+/**
+ * img:set_format(format)
+ * Sets the image format to the given string. No check is made to ensure that 
+ * the Imlib2 shared library can save in this format. If it can not, 
+ * `img:save()` will later fail.
+ */
 static int imagem_set_format(lua_State *L) {
   Image im = check_Image(L, 1);
   imlib_context_set_image(im);
@@ -935,12 +887,10 @@ static int imagem_set_format(lua_State *L) {
   return 0;
 }
 
-/*?lua
-signature "img:has_alpha()"
-description [[
-  Returns a boolean indicating whether the image has an alpha channel.
-  ]]
-?*/
+/**
+ * img:has_alpha()
+ * Gives a boolean value indicating whether the image has an alpha channel.
+ */
 static int imagem_has_alpha(lua_State *L) {
   Image im = check_Image(L, 1);
   imlib_context_set_image(im);
@@ -948,12 +898,10 @@ static int imagem_has_alpha(lua_State *L) {
   return 1;
 }
 
-/*?lua
-signature "img:set_alpha()"
-description [[
-  Enable or disable the image's alpha channel based on the given boolean.
-  ]]
-?*/
+/**
+ * img:set_alpha(bool)
+ * Enable or disable the image's alpha channel based on the given boolean.
+ */
 static int imagem_set_alpha(lua_State *L) {
   Image im = check_Image(L, 1);
   imlib_context_set_image(im);
@@ -961,14 +909,12 @@ static int imagem_set_alpha(lua_State *L) {
   return 0;
 }
 
-/*?lua
-signature "img:get_border()"
-description [[
-  Returns the imlib2.border object for the image. The border is the area at 
-  the edge of the image that does not scale with the rest of the image when 
-  resized - the borders remain constant in size.
-  ]]
-?*/
+/**
+ * img:get_border()
+ * Get an imlib2.border object for `img`.
+ *
+ * @return an imlib2.border
+ */
 static int imagem_get_border(lua_State *L) {
   Image im = check_Image(L, 1);
   Imlib_Border *b = push_Border(L);
@@ -977,10 +923,12 @@ static int imagem_get_border(lua_State *L) {
   return 1;
 }
 
-/*?lua
-signature "img:set_border(border)"
-description "Sets the image border to the given imlib2.border object."
-?*/
+/**
+ * img:set_border(border)
+ * Sets the image border to the given imlib2.border object.
+ *
+ * @param border must be an imlib2.border object
+ */
 static int imagem_set_border(lua_State *L) {
   Image im = check_Image(L, 1);
   Imlib_Border *b = (Imlib_Border*)luaL_checkudata(L, 2, "imlib2.border");
@@ -989,13 +937,14 @@ static int imagem_set_border(lua_State *L) {
   return 0;
 }
 
-/*?lua
-signature "img:get_pixel(x,y)"
-description [[
-  Returns the imlib2.color of the pixel at the given x,y coordinates. The 
-  origin - (0, 0) is at the top left.
-  ]]
-?*/
+/**
+ * img:get_pixel(x, y)
+ * Gives the color of the pixel at the given (x,y) coordinates. The origin - 
+ * (0,0) is at the top left.
+ *
+ * @return an instance of imlib2.color matching the color at the given 
+ *         coordinates.
+ */
 static int imagem_get_pixel(lua_State *L) {
   Image im = check_Image(L, 1);
   int x = luaL_checkint(L, 2);
@@ -1008,16 +957,17 @@ static int imagem_get_pixel(lua_State *L) {
 
 /*** imlib2.image metamethods which wrap functions that return copies (but are  
  * written to change self, to fit in with the rest of the api
- * ***/
+ ***/
 
-/*?lua
-signature "img:crop(x, y, width, height)"
-description "Crops the image to the given rectangle."
-param("x", "the top left x coordinate of the rectangle")
-param("y", "the top left y coordinate of the rectangle")
-param("width", "the width of the rectangle")
-param("height", "the height of the rectangle")
-?*/
+/**
+ * img:crop(x, y, width, height)
+ * Crops the image to the given rectangle.
+ *
+ * @param x the x coordinate of the top left corner
+ * @param y the y coordinate of the top left corner
+ * @param width the width of the rectangle
+ * @param height the height of the rectangle
+ */
 static int imagem_crop(lua_State *L) {
   Image *imp = (Image*)luaL_checkudata(L, 1, "imlib2.image");
   Image old_im;
@@ -1034,20 +984,19 @@ static int imagem_crop(lua_State *L) {
   return 0;
 }
 
-/*?lua
-signature [[img:crop_and_scale(source_x, source_y, source_h, source_w, dest_w, 
-dest_h]]
-description [[
-  Crops the image to the given rectangle and also scales it. The image will be 
-  scaled to the destination_width and destination_height.
-  ]]
-param("source_x", "the top left x coordinate of the source rectangle")
-param("source_y", "the top left y coordinate of the source rectangle")
-param("source_h", "the height of the source rectangle")
-param("source_w", "the width of the source rectangle")
-param("dest_w", "the width of the destination rectangle")
-param("dest_h", "the height of the destination rectangle")
-?*/
+/** img:crop_and_scale(source_x, source_y, source_h, source_w, dest_w, dest_h)
+ * Crops the iamge to the given rectangle and also scales it. The image will 
+ * be scaled to the given destination width and height.
+ * 
+ * @param source_x the x coordinate of the top left corner of the source 
+ *               rectangle
+ * @param source_y the y coordinate of the top left corner of the source 
+ *               rectangle
+ * @param source_h the height of the source rectangle
+ * @param source_w the width of the source rectangle
+ * @param dest_w the width of the destination rectangle
+ * @param dest_h the height of the destination rectangle
+ */
 static int imagem_crop_and_scale(lua_State *L) {
   Image *imp = (Image*)luaL_checkudata(L, 1, "imlib2.image");
   Image old_im;
@@ -1067,11 +1016,10 @@ static int imagem_crop_and_scale(lua_State *L) {
   return 0;
 }
 
-/*?lua
-signature "img:rotate(angle)"
-description "Rotates the image by angle radians"
-param("angle", "the angle of rotation in radians")
-?*/
+/**
+ * img:rotate(angle)
+ * Rotates the image by `angle` radians.
+ */
 static int imagem_rotate(lua_State *L) {
   Image *imp = (Image*)luaL_checkudata(L, 1, "imlib2.image");
   Image old_im;
@@ -1090,10 +1038,10 @@ static int imagem_rotate(lua_State *L) {
 /* TODO imlib_blend_image_onto_image_at_angle */
 /* TODO imlib_blend_image_onto_image_skewed */
 
-/*?lua
-signature "img:flip_horizontal()"
-description "Flips the image horizontally."
-?*/
+/**
+ * img:flip_horizontal()
+ * Flips the image horizontally
+ */
 static int imagem_flip_horizontal(lua_State *L) {
   Image im = check_Image(L, 1);
   imlib_context_set_image(im);
@@ -1101,10 +1049,10 @@ static int imagem_flip_horizontal(lua_State *L) {
   return 1;
 }
 
-/*?lua
-signature "img:flip_vertical()"
-description "Flips the image vertically."
-?*/
+/**
+ * img:flip_vertical()
+ * Flips the image vertically
+ */
 static int imagem_flip_vertical(lua_State *L) {
   Image im = check_Image(L, 1);
   imlib_context_set_image(im);
@@ -1112,10 +1060,10 @@ static int imagem_flip_vertical(lua_State *L) {
   return 1;
 }
 
-/*?lua
-signature "img:flip_diagonal()"
-description "Flips the image diagonally."
-?*/
+/**
+ * img:flip_diagonal()
+ * Flips the image diagonally.
+ */
 static int imagem_flip_diagonal(lua_State *L) {
   Image im = check_Image(L, 1);
   imlib_context_set_image(im);
@@ -1123,11 +1071,13 @@ static int imagem_flip_diagonal(lua_State *L) {
   return 1;
 }
 
-/*?lua
-signature "img:orientate(n)"
-description "Performs the given number of 90 degree rotations."
-param("n", "the number of 90 degree rotations to perform")
-?*/
+/**
+ * img:orientate(n)
+ * Performs `n` 90 degree rotations on the image.
+ *
+ * @param n the number of 90 degree rotations to perform. This will be 
+ *          truncated to an integer.
+ */
 static int imagem_orientate(lua_State *L) {
   Image im = check_Image(L, 1);
   imlib_context_set_image(im);
@@ -1135,13 +1085,11 @@ static int imagem_orientate(lua_State *L) {
   return 1;
 }
 
-/*?lua
-signature "img:blur(radius)"
-description [[
-  Blurs the image. A radius value of 0 has no effect, 1 and above determine 
-  the blur matrix radius that determine how much to blur the image.
-  ]]
-?*/
+/**
+ * img:blue(radius)
+ * Blurs the image. A radious value of 0 has no effect. 1 and above determine 
+ * the blur matrix radius that determines how much to blur the image.
+ */
 static int imagem_blur(lua_State *L) {
   Image im = check_Image(L, 1);
   imlib_context_set_image(im);
@@ -1149,12 +1097,10 @@ static int imagem_blur(lua_State *L) {
   return 1;
 }
 
-/*?lua
-signature "img:sharpen(radius)"
-description [[
-  Sharpens the image. The radius affects how much to sharpen by.
-  ]]
-?*/
+/*
+ * img:sharpen(radius)
+ * Sharpens the image. The radious affects how much to sharpen by.
+ */
 static int imagem_sharpen(lua_State *L) {
   Image im = check_Image(L, 1);
   imlib_context_set_image(im);
@@ -1162,10 +1108,10 @@ static int imagem_sharpen(lua_State *L) {
   return 1;
 }
 
-/*?lua
-signature "img:tile_horizontal()"
-description "Modifies the image so it will tile seamlessly horizontally."
-?*/
+/**
+ * img:tile_horizontal()
+ * Modifies the image so it will tile seamlessly horizontally.
+ */
 static int imagem_tile_horizontal(lua_State *L) {
   Image im = check_Image(L, 1);
   imlib_context_set_image(im);
@@ -1173,10 +1119,10 @@ static int imagem_tile_horizontal(lua_State *L) {
   return 1;
 }
 
-/*?lua
-signature "img:tile_vertical()"
-description "Modifies the image so it will tile seamlessly vertically."
-?*/
+/**
+ * img:tile_vertical()
+ * Modifies the image so it will tile seamlessly vertically.
+ */
 static int imagem_tile_vertical(lua_State *L) {
   Image im = check_Image(L, 1);
   imlib_context_set_image(im);
@@ -1184,12 +1130,10 @@ static int imagem_tile_vertical(lua_State *L) {
   return 1;
 }
 
-/*?lua
-signature "img:tile()"
-description [[
-  Modifies the image so it will tile seamlessly horizontally and vertically.
-  ]]
-?*/
+/**
+ * img:tile()
+ * Modifies the image so it will tile seamless horizontally and vertically.
+ */
 static int imagem_tile(lua_State *L) {
   Image im = check_Image(L, 1);
   imlib_context_set_image(im);
@@ -1198,10 +1142,9 @@ static int imagem_tile(lua_State *L) {
 }
 
 /* TODO, accept a color argument, wrapping imlib_image_clear_color */
-/*?lua
-signature "img:clear()"
-description "Clears the contents of the image."
-?*/
+/** img:clear()
+ * Clears the contents of the image.
+ */
 static int imagem_clear(lua_State *L) {
   Image im = check_Image(L, 1);
   imlib_context_set_image(im);
@@ -1209,14 +1152,13 @@ static int imagem_clear(lua_State *L) {
   return 1;
 }
 
-/*?lua
-signature "img:draw_pixel(x, y, color)"
-description [[
-  Draw a pixel at the specified coordinates. If no color is specified, then it 
-  will use the most recent color.
-  ]]
-param("color", "optional. An imlib2.color object")
-?*/
+/**
+ * img:draw_pixel(x, y[, color])
+ * Draw a pixel at the specified coordinates. If no color is specified then 
+ * the pixel will be drawn in the most recent color.
+ *
+ * @param color optional, an imlib2.color object
+ */
 static int imagem_draw_pixel(lua_State *L) {
   Image im = check_Image(L, 1);
   imlib_context_set_image(im);
@@ -1230,13 +1172,12 @@ static int imagem_draw_pixel(lua_State *L) {
   return 0;
 }
 
-/*?lua
-signature "img:draw_line(x1, y1, x2, y2, color)"
-description [[
-  Draw a line from (x1, y1) to (x2, y2). If no color is specified, then it 
-  will use the most recent color.
-  ]]
-?*/
+/** img:draw_line(x1, y1, x2, y2, color)
+ * Draw a line from (x1, y1) to (x2, y2). If no color is specified, then it 
+ * will be drawn in the most recent color.
+ *
+ * @param color optional, an imlib2.color object
+ */
 static int imagem_draw_line(lua_State *L) {
   Image im = check_Image(L, 1);
   imlib_context_set_image(im);
@@ -1252,13 +1193,13 @@ static int imagem_draw_line(lua_State *L) {
   return 0;
 }
 
-/*?lua
-signature "img:draw_rectangle(x, y, width, height, color)"
-description [[
-  Draws the outline of a rectangle. If no color is specified, then the most 
-  recent color will be used.
-  ]]
-?*/
+/**
+ * img:draw_rectangle(x, y, width, height[, color])
+ * Draws the outline of a rectangle. If no color is specified, then it will be 
+ * drawn in the most recent color.
+ *
+ * @param color optional, an imlib2.color object
+ */
 static int imagem_draw_rectangle(lua_State *L) {
   Image im = check_Image(L, 1);
   imlib_context_set_image(im);
@@ -1274,13 +1215,13 @@ static int imagem_draw_rectangle(lua_State *L) {
   return 0;
 }
 
-/*?lua
-signature "img:fill_rectangle(x, y, width, height, color)"
-description [[
-  Draws a filled rectangle. If no color is specified, then the most recent 
-  color will be used.
-  ]]
-?*/
+/**
+ * img:fill_rectangle(x, y, width, height, color)
+ * Draws a filled rectangle. If no color is specified, then it will be drawn 
+ * in the most recent color.
+ *
+ * @param color optional, an imlib2.color object
+ */
 static int imagem_fill_rectangle(lua_State *L) {
   Image im = check_Image(L, 1);
   imlib_context_set_image(im);
@@ -1299,10 +1240,10 @@ static int imagem_fill_rectangle(lua_State *L) {
 /* TODO imlib_copy_alpha_to_image */
 /* TODO imlib_copy_alpha_rectangle_to_image */
 
-/*?lua
-signature "img:scroll_rectangle(x, y, width, height, delta_x, delta_y"
-description "Scrolls the specified rectangle by the given displacement."
-?*/
+/**
+ * img:scroll_rectangle(x, y, width, height, delta_x, delta_y)
+ * Scrolls the specified rectangle by the given displacement.
+ */
 static int imagem_scroll_rectangle(lua_State *L) {
   Image im = check_Image(L, 1);
   imlib_context_set_image(im);
@@ -1316,10 +1257,10 @@ static int imagem_scroll_rectangle(lua_State *L) {
   return 0;
 }
 
-/*?lua
-signature "img:copy_rectangle(x, y, width, height, new_x, new_y)"
-description "Copies the given rectangle to (new_x, new_y)"
-?*/
+/**
+ * img:copy_rectangle(x, y, width, height, new_x, new_y)
+ * Copies the given rectangle to (new_x, new_y).
+ */
 static int imagem_copy_rectangle(lua_State *L) {
   Image im = check_Image(L, 1);
   imlib_context_set_image(im);
@@ -1333,11 +1274,17 @@ static int imagem_copy_rectangle(lua_State *L) {
   return 0;
 }
 
-/*?lua
-signature "img:fill_gradient(gradient, x, y, width, height, angle)"
-description "Fills a rectangle with the given gradient."
-param("angle", "the angle of the gradient")
-?*/
+/**
+ * img:fill_gradient(gradient, x, y, width, height, angle)
+ * Fills a rectangle with the given gradient
+ *
+ * @param gradient an imlib2.gradient object
+ * @param x the x coordinate of the rectangle's top left corner
+ * @param y the y coordinate of the rectangle's top left corner
+ * @param width the width of the rectangle
+ * @param height the height of the rectangle
+ * @param angle the angle at which the gradient will be drawn
+ */
 static int imagem_fill_gradient(lua_State *L) {
   Image im = check_Image(L, 1);
   Gradient gr = check_Gradient(L, 2);
@@ -1353,15 +1300,15 @@ static int imagem_fill_gradient(lua_State *L) {
   return 0;
 }
 
-/*?lua
-description [[
-  Draws the outline of an ellipse. (xc, yc) is the centre of the ellipse, 
-  which is described by the equation (x-xc)^2/a^2 + (y-yc)^2/b^2 = 1. If no 
-  color is specified, then the most recent color will be used.
-  ]]
-param("a", "horizontal amplitude")
-param("b", "vertical amplitude")
-?*/
+/**
+ * img:draw_ellipse(xc, yc, a, b[, color])
+ * Draws the outline of an ellipse. (xc, yc) is the centre of the ellipse, 
+ * which is described by the equation (x-xc)^2/a^2 + (y-yc)^2/b^2 = 1. If no 
+ * color is specified then it will be drawn in the most recent color.
+ *
+ * @param a horizontal amplitude
+ * @param b vertical amplitude
+ */
 static int imagem_draw_ellipse(lua_State *L) {
   Image im = check_Image(L, 1);
   imlib_context_set_image(im);
@@ -1377,15 +1324,15 @@ static int imagem_draw_ellipse(lua_State *L) {
   return 0;
 }
 
-/*?lua
-description [[
-  Fills an ellipse (xc, yc) is the centre of the ellipse, which is described 
-  by the equation (x-xc)^2/a^2 + (y-yc)^2/b^2 = 1. If no color is specified, 
-  then the most recent color will be used.
-  ]]
-param("a", "horizontal amplitude")
-param("b", "vertical amplitude")
-?*/
+/**
+ * img:fill_ellipse(xc, yc, a, b[, color])
+ * Fills an ellipse. (xc, yc) is the centre of the ellipse, which is described 
+ * by the equation (x-xc)^2/a^2 + (y-yc)^2/b^2 = 1. If no color is specified 
+ * then it will be drawn in the most recent color.
+ *
+ * @param a horizontal amplitude
+ * @param b vertical amplitude
+ */
 static int imagem_fill_ellipse(lua_State *L)
 {
   Image im = check_Image(L, 1);
@@ -1402,15 +1349,18 @@ static int imagem_fill_ellipse(lua_State *L)
   return 0;
 }
 
-/*?lua
-description [[
-  Draws the outline of a polygon. Points in the imlib2.polygon are drawn first 
-  to last (in the order in which they were added). The final point will be 
-  drawn to the first point if closed is true. If no color is specified, then 
-  the most recent color will be used.
-  ]]
-param("closed", "closed polygon flag")
-?*/
+/**
+ * img:draw_polygon(polygon, closed[, color])
+ * Draws the outline of a polygon. Points in the imlib2.polygon are drawn in 
+ * the order in which they were added. The final point will be connected to 
+ * the first point if `closed` is true. If no color is specified then it will 
+ * be drawn in the most recent color.
+ *
+ * @param polygon an imlib2.polygon
+ * @param closed a boolean indicating whether to connect the last point to the 
+ *               first
+ * @param color optional, an imlib2.color object
+ */
 static int imagem_draw_polygon(lua_State *L) {
   Image im = check_Image(L, 1);
   Polygon po = check_Polygon(L, 2);
@@ -1424,13 +1374,14 @@ static int imagem_draw_polygon(lua_State *L) {
   return 0;
 }
 
-/*?lua
-signature "img:fill_polygon(polygon, color)"
-description [[
-  Fills a polygon. If no color is specified, then the most recent color will 
-  be used.
-  ]]
-?*/
+/**
+ * img:fill_polygon(polygon[, color])
+ * Fills a polygon. If no color is specified then it will be drawn in the most 
+ * recent color.
+ *
+ * @param polygon an imlib2.polygon
+ * @param color optional, an imlib2.color object
+ */
 static int imagem_fill_polygon(lua_State *L) {
   Image im = check_Image(L, 1);
   Polygon po = check_Polygon(L, 2);
@@ -1443,14 +1394,16 @@ static int imagem_fill_polygon(lua_State *L) {
   return 0;
 }
 
-/*?lua
-signature "img:draw_text(font, string, x, y, color)"
-description [[
-  Draws a string in the given font at (x, y). If no color is specified, then 
-  the most recent color will be used.
-  ]]
-param("font", "an imlib2.font")
-?*/
+/**
+ * img:draw_text(font, string, x, y[, color])
+ * Draws a string in the given font at point (x, y). If no color is specified 
+ * then it will be drawn in the most recent color.
+ *
+ * @param font an imlib2.font object
+ * @param string the string to be drawn
+ * @param x the x coordinate of the point to start drawing
+ * @param y the y coordinate of the point to start drawing
+ */
 static int imagem_draw_text(lua_State *L) {
   Image im = check_Image(L, 1);
   Font fo = check_Font(L, 2);
@@ -1472,16 +1425,14 @@ static int imagem_draw_text(lua_State *L) {
 
 /* TODO: Look at imlib_filter_* */
 
-/*?lua
-signature "img:save(path)"
-description [[
-  Saves the image to the given path. The file extension (e.g. .png or .jpg) 
-  will affect the output format (but may not override the format set by 
-  img:set_format()
-  <br/>
-  Returns nil, err_msg if the save is not successful.
-  ]]
-?*/
+/**
+ * img:save(path)
+ * Saves the image to the given path. The file extension (e.g. .png or .jpg) 
+ * will affect the output format (but will not override any format set by a 
+ * call to `img:set_format()`).
+ *
+ * @return true or nil plus an error message if the save fails
+ */
 static int imagem_save(lua_State *L) {
   Imlib_Load_Error err;
 
@@ -1490,7 +1441,8 @@ static int imagem_save(lua_State *L) {
   imlib_save_image_with_error_return(luaL_checkstring(L,2), &err);
 
   if (err == IMLIB_LOAD_ERROR_NONE) {
-    return 0;
+    lua_pushboolean(L, 1);
+    return 1;
   } else {
     lua_pushnil(L);
     push_load_error_str(L, err, luaL_checkstring(L, 1));
@@ -1499,58 +1451,55 @@ static int imagem_save(lua_State *L) {
 }
 
 /*** imlib2 functions ***/
-/*?lua
-module "imlib2"
-description [[
-  Functions to modify the operation of the imlib2 library.
-  ]]
-?*/
 
-/*?lua
-signature "imlib2.set_anti_alias(bool)"
-description "Enable or disable anti-aliasing for future drawing operations."
-?*/
+/**
+ * @@module imlib2
+ * Functions to modify the operation of the imlib2 library
+ */
+
+/**
+ * imlib2.set_anti_alias(bool)
+ * Enable or disable anti-aliasing for future drawing operations.
+ */
 static int set_anti_alias(lua_State *L) {
   luaL_checkany(L, 1);
   imlib_context_set_anti_alias(lua_toboolean(L, 1));
   return 1;
 }
 
-/*?lua
-signature "imlib2.get_anti_alias(bool)"
-description [[
-  Returns a boolean indicating whether anti-aliasing is enabled or disabled
-  ]]
-?*/
+/**
+ * imlib2.get_anti_alias()
+ * Gives a boolean indicating whether anti-aliasing is enabled or disabled
+ */
 static int get_anti_alias(lua_State *L) {
   lua_pushboolean(L, imlib_context_get_anti_alias());
   return 1;
 }
 
-/*?lua
-signature "imlib2.get_cache_size()"
-description [[
-  Return the current size of the image cache in bytes.
-  ]]
-?*/
+/**
+ * imlib2.get_cache_size()
+ * Gives the current size of the image cache in bytes
+ */
 static int get_cache_size(lua_State *L) {
   lua_pushinteger(L, imlib_get_cache_size());
   return 1;
 }
 
-/*?lua
-signature "imlib2.set_cache_size()"
-description "Set the size of the image cache in bytes."
-?*/
+/**
+ * imlib2.set_cache_size(size)
+ * Set the size of the image cache
+ *
+ * @param size the desired cache size in bytes
+ */
 static int set_cache_size(lua_State *L) {
   imlib_set_cache_size(luaL_checkint(L, 1));
   return 1;
 }
 
-/*?lua
-signature "imlib2.flush_cache()"
-description "Flushes the cache"
-?*/
+/**
+ * imlib2.flush_cache()
+ * Flushes the image cache.
+ */
 static int flush_cache(lua_State *L) {
   int csize = imlib_get_cache_size();
   imlib_set_cache_size(0);
