@@ -8,6 +8,7 @@ functionality, but aims to support all other features. The API is fully
 any problems or have any suggestions (or patches) then please contact me.
 
 ## Links
+* [Home](http://asbradbury.org/projects/lua-imlib2/)
 * [Download](http://luaforge.net/projects/lua-imlib2/)
 * [Documentation](http://asbradbury.org/projects/lua-imlib2/doc/)
 * [Source](http://github.com/asb/lua-imlib2/)
